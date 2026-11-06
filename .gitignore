@@ -1,0 +1,12 @@
+# ---- General
+.env
+.vscode/
+.DS_Store
+
+# ---- Python
+__pycache__/
+*.pyc
+.venv/
+
+# ---- Data
+raw_data
