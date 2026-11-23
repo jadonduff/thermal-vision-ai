@@ -10,3 +10,6 @@ __pycache__/
 
 # ---- Data
 raw_data
+data
+data_aug
+docs
