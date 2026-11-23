@@ -57,29 +57,42 @@ def random_crop(npy_data):
     return cropped_image, fraction
 
 # ---- Main Loop ------------------------------------------------------------
+# Iterate through folders in data folder
 for folder in data_folder.iterdir():
+    # Format destination dir name and create it (if it doesn't exist yet)
     to_dir = augmented_data_folder / folder.name
     to_dir.mkdir(parents=True, exist_ok=True)
-    
+
+    # Iterate through images in current folder.
     for file in sorted(folder.glob("*.npy")):
+        # Load the npy data from the image
         npy_data = np.load(file)
 
+        # Run 4 augmentations (1 for each rotation)
         for k in range(4):
+            # Rotate the npy data
             deg = k*90
             rotated = np.rot90(npy_data, k=k)
 
+            # Save it
             np.save(to_dir / f"{file.stem}_r{deg}.npy", np.ascontiguousarray(rotated))
 
+            # Add it to a set of seen images so no duplicates are stored
             seen = set()
 
+            # Run for all variants
             while len(seen) < variants:
+                # Randomly shift and crop the rotated npy data
                 shifted, dy, dx = random_shift(rotated)
                 cropped, fraction = random_crop(shifted)
 
+                # Generate the augmented image name
                 name = f"{file.stem}_r{deg}_s{dy}x{dy}_m{fraction}.npy"
 
+                # Check if name has been already seen
                 if name in seen:
                     continue
 
+                # Save the augmented image and add it to set of seen images
                 seen.add(name)
                 np.save(to_dir / name, np.ascontiguousarray(cropped))
